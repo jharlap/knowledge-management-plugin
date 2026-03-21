@@ -29,13 +29,9 @@ export async function runSync(config: Config): Promise<SyncSummary> {
 
   await saveState(config.stateFile, state);
 
-  // Rebuild the QMD index if anything changed
-  const anyChanges =
-    (summary.word && (summary.word.indexed > 0 || summary.word.removed > 0)) ||
-    (summary.gdocs && summary.gdocs.indexed > 0);
-
-  if (anyChanges) {
-    try {
+  // Always update the QMD index — it's idempotent and handles the case where
+  // mirroring succeeded on a previous run but the index update failed.
+  try {
       const store = await createStore({
         dbPath: config.dbPath,
         config: {
@@ -59,7 +55,6 @@ export async function runSync(config: Config): Promise<SyncSummary> {
     } catch (err) {
       summary.errors.push(`QMD index update failed: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }
 
   return summary;
 }
