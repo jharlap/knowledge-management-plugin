@@ -112,11 +112,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // Auto-sync on startup if the index is stale
 const state = await loadState(config.stateFile);
 if (isSyncStale(config, state)) {
-  // Fire and forget — don't block server startup
   runSync(config).catch((err) =>
     console.error('[knowledge-management] Background sync failed:', err),
   );
 }
+
+// Periodic background sync — runs every syncIntervalMinutes while Claude is open
+const intervalMs = config.syncIntervalMinutes * 60 * 1000;
+setInterval(() => {
+  runSync(config).catch((err) =>
+    console.error('[knowledge-management] Background sync failed:', err),
+  );
+}, intervalMs).unref();
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
