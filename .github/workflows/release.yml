@@ -22,6 +22,16 @@ jobs:
       - name: Install dependencies (production only)
         run: npm ci --omit=dev
 
+      - name: Embed OAuth credentials
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        run: |
+          cat > src/credentials.ts <<EOF
+          export const GOOGLE_CLIENT_ID = '${GOOGLE_CLIENT_ID}';
+          export const GOOGLE_CLIENT_SECRET = '${GOOGLE_CLIENT_SECRET}';
+          EOF
+
       - name: Build
         run: npx tsc  # tsc is a devDep so call it via npx from the full install
 

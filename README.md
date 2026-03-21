@@ -23,38 +23,9 @@ The installer will ask for:
 | Sync Google Docs? | `true` or `false` |
 | Google Drive folder ID | Optional — restrict to a subfolder. Find it in the Drive URL. Leave empty for all docs. |
 | Sync interval (minutes) | How often to re-sync while Claude is running (default: 60) |
-| Google OAuth Client ID | From your Google Cloud project (see below) |
-| Google OAuth Client Secret | From your Google Cloud project |
-
 ### Setting up Google Docs sync
 
-You'll need a free Google Cloud project with your own OAuth credentials. This takes about 5 minutes and means Google Drive access is authorized directly between you and Google — no third-party app involved.
-
-**Step 1 — Create a project**
-
-Open [console.cloud.google.com/projectcreate](https://console.cloud.google.com/projectcreate), give it any name (e.g. "My Knowledge Plugin"), click **Create**.
-
-**Step 2 — Enable the Drive API**
-
-With your new project selected, open [console.cloud.google.com/apis/library/drive.googleapis.com](https://console.cloud.google.com/apis/library/drive.googleapis.com) and click **Enable**.
-
-**Step 3 — Configure the OAuth consent screen**
-
-Go to [console.cloud.google.com/apis/credentials/consent](https://console.cloud.google.com/apis/credentials/consent):
-- User type: **External**
-- App name: anything (e.g. "Knowledge Plugin")
-- Add your email as a **Test user** (under "Test users" → Add users)
-- Save and continue through the remaining screens
-
-**Step 4 — Create credentials**
-
-Go to [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials):
-- Click **Create Credentials** → **OAuth client ID**
-- Application type: **Desktop app**
-- Click **Create**
-- Copy the **Client ID** and **Client Secret**
-
-Paste these into the plugin's configuration fields. The first time you sync Google Docs, a browser window will open asking you to authorize access. After that it's automatic.
+Set **Sync Google Docs?** to `true` in the installer. The first time you sync, a browser window opens asking you to authorize read-only access to your Google Drive — click Allow. That's it. Your authorization is stored locally and renewed automatically.
 
 ## Usage
 

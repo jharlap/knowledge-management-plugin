@@ -8,8 +8,6 @@ export interface Config {
   googleDocsEnabled: boolean;
   googleDriveFolderId: string | null;
   syncIntervalMinutes: number;
-  googleClientId: string | null;
-  googleClientSecret: string | null;
 
   // Internal paths
   dataDir: string;
@@ -37,8 +35,6 @@ export function loadConfig(): Config {
     googleDocsEnabled: process.env.KM_GOOGLE_DOCS_ENABLED === 'true',
     googleDriveFolderId: process.env.KM_GOOGLE_DRIVE_FOLDER_ID ?? null,
     syncIntervalMinutes: parseInt(process.env.KM_SYNC_INTERVAL_MINUTES ?? '60', 10),
-    googleClientId: process.env.KM_GOOGLE_CLIENT_ID ?? null,
-    googleClientSecret: process.env.KM_GOOGLE_CLIENT_SECRET ?? null,
 
     dataDir,
     mirrorWordDir,

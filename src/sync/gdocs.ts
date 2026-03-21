@@ -20,14 +20,9 @@ export interface GdocsSyncResult {
 export async function syncGoogleDocs(config: Config, state: SyncState): Promise<GdocsSyncResult> {
   const result: GdocsSyncResult = { indexed: 0, unchanged: 0, errors: [] };
 
-  if (!config.googleClientId || !config.googleClientSecret) {
-    result.errors.push('Google client credentials not configured — skipping Google Docs sync');
-    return result;
-  }
-
   await fs.mkdir(config.mirrorGdocsDir, { recursive: true });
 
-  const auth = await getAuthClient(config.tokensDir, config.googleClientId, config.googleClientSecret);
+  const auth = await getAuthClient(config.tokensDir);
   const files = await listGoogleDocs(auth, config.googleDriveFolderId ?? undefined);
   const pandoc = await resolvePandoc(config.pandocBin);
 

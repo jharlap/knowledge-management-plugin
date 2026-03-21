@@ -5,56 +5,54 @@ import { promisify } from 'util';
 import path from 'path';
 import { google } from 'googleapis';
 import type { OAuth2Client } from 'google-auth-library';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../credentials.js';
 
 const execAsync = promisify(exec);
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.readonly'];
 const TOKEN_FILE = 'google.json';
 
-export async function getAuthClient(
-  tokensDir: string,
-  clientId: string,
-  clientSecret: string,
-): Promise<OAuth2Client> {
+export async function getAuthClient(tokensDir: string): Promise<OAuth2Client> {
   const tokenPath = path.join(tokensDir, TOKEN_FILE);
 
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    throw new Error(
+      'Google OAuth credentials are not configured. ' +
+      'If you built this from source, copy src/credentials.example.ts to src/credentials.ts and fill in your GCP credentials.',
+    );
+  }
+
   const oauth2Client = new google.auth.OAuth2(
-    clientId,
-    clientSecret,
-    // Redirect URI is set dynamically once we know the port
-    'http://localhost',
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    'http://localhost', // placeholder; overridden with the actual port below
   );
 
   // Try loading a saved token first
   try {
     const raw = await fs.readFile(tokenPath, 'utf-8');
-    const token = JSON.parse(raw);
-    oauth2Client.setCredentials(token);
-
-    // If the access token is expired but we have a refresh token, googleapis
-    // will refresh it automatically on the next API call. Nothing to do here.
+    oauth2Client.setCredentials(JSON.parse(raw));
+    // googleapis refreshes expired access tokens automatically via the refresh token
     return oauth2Client;
   } catch {
-    // No saved token — run the browser-based consent flow
+    // No saved token — run the browser consent flow
   }
 
   const { port, server } = await startCallbackServer();
   const redirectUri = `http://localhost:${port}/callback`;
 
-  // Recreate client with the correct redirect URI now that we have the port
-  const authClient = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+  const authClient = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, redirectUri);
 
   const authUrl = authClient.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
-    prompt: 'consent', // ensure we always get a refresh_token
+    prompt: 'consent', // always request refresh_token
   });
 
-  console.error(`[knowledge-management] Opening browser for Google authorization...`);
+  console.error('[knowledge-management] Opening browser for Google authorization...');
   await execAsync(`open "${authUrl}"`);
 
   const code = await waitForCode(server, port);
-
   const { tokens } = await authClient.getToken(code);
   authClient.setCredentials(tokens);
 
@@ -102,7 +100,7 @@ function waitForCode(server: http.Server, port: number): Promise<string> {
 
       if (code) {
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end('<h1>Authorized!</h1><p>Knowledge Management plugin is connected to Google. You can close this tab.</p>');
+        res.end('<h1>Authorized!</h1><p>Knowledge Management is connected to Google. You can close this tab.</p>');
         clearTimeout(timeout);
         server.close();
         resolve(code);

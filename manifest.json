@@ -13,9 +13,7 @@
         "KM_DOCUMENTS_PATH":        "${user_config.documents_path}",
         "KM_GOOGLE_DOCS_ENABLED":   "${user_config.google_docs_enabled}",
         "KM_GOOGLE_DRIVE_FOLDER_ID":"${user_config.google_drive_folder_id}",
-        "KM_SYNC_INTERVAL_MINUTES": "${user_config.sync_interval_minutes}",
-        "KM_GOOGLE_CLIENT_ID":      "${user_config.google_client_id}",
-        "KM_GOOGLE_CLIENT_SECRET":  "${user_config.google_client_secret}"
+        "KM_SYNC_INTERVAL_MINUTES": "${user_config.sync_interval_minutes}"
       }
     }
   },
@@ -33,24 +31,12 @@
     "google_drive_folder_id": {
       "type": "string",
       "title": "Google Drive folder ID (optional)",
-      "description": "Restrict Google Docs sync to a specific folder. Leave empty to include all your docs. Find the folder ID in the URL when you open the folder in Google Drive."
+      "description": "Restrict to a specific folder. Find the ID in the Drive URL when you open the folder. Leave empty for all docs."
     },
     "sync_interval_minutes": {
       "type": "number",
       "title": "Sync interval (minutes)",
-      "description": "How often to check for updated documents when Claude is running. Default: 60."
-    },
-    "google_client_id": {
-      "type": "string",
-      "title": "Google OAuth Client ID",
-      "description": "From Google Cloud Console → APIs & Services → Credentials. See the setup guide in the README.",
-      "sensitive": true
-    },
-    "google_client_secret": {
-      "type": "string",
-      "title": "Google OAuth Client Secret",
-      "description": "From Google Cloud Console → APIs & Services → Credentials.",
-      "sensitive": true
+      "description": "How often to check for updated documents while Claude is running. Default: 60."
     }
   }
 }
