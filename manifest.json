@@ -4,6 +4,11 @@
   "version": "0.1.0",
   "description": "Sync your Word docs and Google Docs into a searchable local index Claude can use without loading full files.",
   "author": { "name": "jharlap" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jharlap/knowledge-management-plugin.git"
+  },
+  "support": "https://github.com/jharlap/knowledge-management-plugin/issues",
   "server": {
     "type": "node",
     "entry_point": "dist/index.js",
