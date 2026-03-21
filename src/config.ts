@@ -19,6 +19,14 @@ export interface Config {
   pandocBin: string;
 }
 
+// If the .mcpb runtime fails to substitute a template variable it passes the
+// literal string "${user_config.xxx}" — treat that as unset.
+function env(key: string): string | undefined {
+  const val = process.env[key];
+  if (!val || val.startsWith('${')) return undefined;
+  return val;
+}
+
 export function loadConfig(): Config {
   const dataDir = path.join(os.homedir(), '.local', 'share', 'knowledge-management');
   const mirrorWordDir = path.join(dataDir, 'mirror', 'word');
@@ -30,11 +38,13 @@ export function loadConfig(): Config {
   const arch = process.arch === 'arm64' ? 'arm64' : 'x86_64';
   const bundledPandoc = path.join(extensionDir, 'bin', `pandoc-${arch}`);
 
+  const rawInterval = parseInt(env('KM_SYNC_INTERVAL_MINUTES') ?? '60', 10);
+
   return {
-    documentsPath: process.env.KM_DOCUMENTS_PATH ?? path.join(os.homedir(), 'Documents'),
-    googleDocsEnabled: process.env.KM_GOOGLE_DOCS_ENABLED === 'true',
-    googleDriveFolderId: process.env.KM_GOOGLE_DRIVE_FOLDER_ID ?? null,
-    syncIntervalMinutes: parseInt(process.env.KM_SYNC_INTERVAL_MINUTES ?? '60', 10),
+    documentsPath: env('KM_DOCUMENTS_PATH') ?? path.join(os.homedir(), 'Documents'),
+    googleDocsEnabled: env('KM_GOOGLE_DOCS_ENABLED') === 'true',
+    googleDriveFolderId: env('KM_GOOGLE_DRIVE_FOLDER_ID') ?? null,
+    syncIntervalMinutes: isNaN(rawInterval) ? 60 : rawInterval,
 
     dataDir,
     mirrorWordDir,
