@@ -1,5 +1,6 @@
 import os from 'os';
 import path from 'path';
+import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 export interface Config {
@@ -27,6 +28,23 @@ function env(key: string): string | undefined {
   return val;
 }
 
+// Read user config directly from Claude Desktop's settings file.
+// Claude Desktop stores user_config in:
+//   ~/Library/Application Support/Claude/Claude Extensions Settings/<extensionId>.json
+// This is the fallback when env var template substitution doesn't happen.
+function readExtensionSettings(extensionDir: string): Record<string, unknown> {
+  try {
+    const extensionId = path.basename(extensionDir);
+    const claudeDir = path.dirname(path.dirname(extensionDir));
+    const settingsPath = path.join(claudeDir, 'Claude Extensions Settings', `${extensionId}.json`);
+    const raw = readFileSync(settingsPath, 'utf8');
+    const data = JSON.parse(raw) as { userConfig?: Record<string, unknown> };
+    return data.userConfig ?? {};
+  } catch {
+    return {};
+  }
+}
+
 export function loadConfig(): Config {
   const dataDir = path.join(os.homedir(), '.local', 'share', 'knowledge-management');
   const mirrorWordDir = path.join(dataDir, 'mirror', 'word');
@@ -38,12 +56,21 @@ export function loadConfig(): Config {
   const arch = process.arch === 'arm64' ? 'arm64' : 'x86_64';
   const bundledPandoc = path.join(extensionDir, 'bin', `pandoc-${arch}`);
 
-  const rawInterval = parseInt(env('KM_SYNC_INTERVAL_MINUTES') ?? '60', 10);
+  // Prefer env vars (substituted by mcpb runtime); fall back to settings file.
+  const settings = readExtensionSettings(extensionDir);
+  function cfg(envKey: string, settingsKey: string): string | undefined {
+    const fromEnv = env(envKey);
+    if (fromEnv !== undefined) return fromEnv;
+    const v = settings[settingsKey];
+    return v !== undefined ? String(v) : undefined;
+  }
+
+  const rawInterval = parseInt(cfg('KM_SYNC_INTERVAL_MINUTES', 'sync_interval_minutes') ?? '60', 10);
 
   return {
-    documentsPath: env('KM_DOCUMENTS_PATH') ?? path.join(os.homedir(), 'Documents'),
-    googleDocsEnabled: env('KM_GOOGLE_DOCS_ENABLED') === 'true',
-    googleDriveFolderId: env('KM_GOOGLE_DRIVE_FOLDER_ID') ?? null,
+    documentsPath: cfg('KM_DOCUMENTS_PATH', 'documents_path') ?? path.join(os.homedir(), 'Documents'),
+    googleDocsEnabled: cfg('KM_GOOGLE_DOCS_ENABLED', 'google_docs_enabled') === 'true',
+    googleDriveFolderId: cfg('KM_GOOGLE_DRIVE_FOLDER_ID', 'google_drive_folder_id') ?? null,
     syncIntervalMinutes: isNaN(rawInterval) ? 60 : rawInterval,
 
     dataDir,
