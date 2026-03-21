@@ -19,8 +19,8 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Install dependencies (production only)
-        run: npm ci --omit=dev
+      - name: Install all dependencies
+        run: npm ci
 
       - name: Embed OAuth credentials
         env:
@@ -33,7 +33,7 @@ jobs:
           EOF
 
       - name: Build
-        run: npx tsc  # tsc is a devDep so call it via npx from the full install
+        run: npm run build
 
       - name: Read binary versions
         id: versions
@@ -59,9 +59,6 @@ jobs:
           unzip -j /tmp/pandoc-x86_64.zip "pandoc-${PANDOC_VERSION}/bin/pandoc" -d /tmp/pandoc-x86_64
           mv /tmp/pandoc-x86_64/pandoc bin/pandoc-x86_64
           chmod +x bin/pandoc-x86_64
-
-      - name: Reinstall with devDependencies for mcpb
-        run: npm ci
 
       - name: Package .mcpb
         run: npx @anthropic-ai/mcpb pack
