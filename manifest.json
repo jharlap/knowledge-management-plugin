@@ -3,6 +3,7 @@
   "name": "knowledge-management",
   "version": "0.1.0",
   "description": "Sync your Word docs and Google Docs into a searchable local index Claude can use without loading full files.",
+  "long_description": "Keeps your Word documents and Google Docs synced into a local search index. Claude can search and retrieve relevant content without loading full files into context.\n\n**After installing, add this to Claude's Custom Instructions** (Settings → Custom Instructions) so Claude automatically searches your documents:\n\n> I have a knowledge-management extension that indexes my Word documents and Google Docs. Before answering any question that might be in my notes or documents, search the knowledge base using the search tool. Use list_sources to see what's indexed and mention any available updates. Use sync to refresh the index when asked or when the last sync was more than a day ago. Always search before telling me you don't have information on a topic.\n\nThis step is required — without it, Claude won't know to use your knowledge base unless you ask explicitly.",
   "author": { "name": "jharlap" },
   "repository": {
     "type": "git",

@@ -9,9 +9,18 @@ The plugin syncs your documents into a local [QMD](https://github.com/tobi/qmd) 
 1. Download the latest `.mcpb` file from [Releases](../../releases)
 2. Double-click it — Claude Desktop will prompt you to install
 3. Fill in the setup form (see Configuration below)
-4. Ask Claude to `sync` your documents
+4. **Add the custom instruction below** so Claude automatically uses your knowledge base
+5. Ask Claude to `sync` your documents
 
 No Node.js, no npm, no terminal required.
+
+## Required: tell Claude to use your knowledge base
+
+Claude won't automatically search your documents unless you tell it to. Add this to **Settings → Custom Instructions** in Claude Desktop:
+
+> I have a knowledge-management extension that indexes my Word documents and Google Docs. Before answering any question that might be in my notes or documents, search the knowledge base using the search tool. Use list_sources to see what's indexed and mention any available updates. Use sync to refresh the index when asked or when the last sync was more than a day ago. Always search before telling me you don't have information on a topic.
+
+This is a one-time setup step. Once added, Claude will proactively search your documents in every conversation.
 
 ## Configuration
 
