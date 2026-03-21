@@ -25,9 +25,9 @@
       "description": "Local folder to scan for Word documents (.docx). Subfolders are included."
     },
     "google_docs_enabled": {
-      "type": "string",
-      "title": "Sync Google Docs? (true / false)",
-      "description": "Set to true to include Google Docs in your knowledge base."
+      "type": "boolean",
+      "title": "Sync Google Docs?",
+      "description": "Include Google Docs in your knowledge base."
     },
     "google_drive_folder_id": {
       "type": "string",
