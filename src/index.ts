@@ -1,6 +1,6 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema, ListPromptsRequestSchema, GetPromptRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { loadConfig } from './config.js';
 import { loadState } from './sync/state.js';
 import { runSync, isSyncStale } from './sync/index.js';
@@ -30,8 +30,38 @@ if (process.argv[2] === 'sync') {
 // MCP server mode
 const server = new Server(
   { name: 'knowledge-management', version: '0.1.0' },
-  { capabilities: { tools: {} } },
+  { capabilities: { tools: {}, prompts: {} } },
 );
+
+const KM_PROMPT_TEXT = `You have access to a personal knowledge base via the knowledge-management extension. It indexes the user's Word documents and Google Docs into a local search index.
+
+How to use it:
+- Before answering any question that might be covered in the user's documents, call the \`search\` tool with relevant keywords.
+- When the user asks what files or sources are available, call \`list_sources\`. Check the output for any update notices and mention them.
+- When the user asks to refresh or update their knowledge base, call \`sync\`.
+- To retrieve a full document, call \`get_document\` with the path or docid from search results.
+
+Always search before saying you don't have information on a topic — it may be in their documents.`;
+
+server.setRequestHandler(ListPromptsRequestSchema, async () => ({
+  prompts: [
+    {
+      name: 'knowledge-management',
+      description: 'Activates knowledge management mode: search documents before answering, surface update notices.',
+    },
+  ],
+}));
+
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+  if (request.params.name !== 'knowledge-management') {
+    throw new Error(`Unknown prompt: ${request.params.name}`);
+  }
+  return {
+    messages: [
+      { role: 'user', content: { type: 'text', text: KM_PROMPT_TEXT } },
+    ],
+  };
+});
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [

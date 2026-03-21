@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2",
+  "manifest_version": "0.3",
   "name": "knowledge-management",
   "version": "0.1.0",
   "description": "Sync your Word docs and Google Docs into a searchable local index Claude can use without loading full files.",
@@ -23,6 +23,32 @@
       }
     }
   },
+  "tools": [
+    {
+      "name": "sync",
+      "description": "Sync Word documents and Google Docs into the local search index."
+    },
+    {
+      "name": "search",
+      "description": "Search across all indexed documents by keyword or natural language query."
+    },
+    {
+      "name": "get_document",
+      "description": "Retrieve the full content of a document by path or docid."
+    },
+    {
+      "name": "list_sources",
+      "description": "Show configured sources, document counts, and last sync times."
+    }
+  ],
+  "tools_generated": true,
+  "prompts": [
+    {
+      "name": "knowledge-management",
+      "description": "Activates knowledge management mode: search documents before answering, surface update notices.",
+      "text": "You have access to a personal knowledge base via the knowledge-management extension. It indexes the user's Word documents and Google Docs into a local search index.\n\nHow to use it:\n- Before answering any question that might be covered in the user's documents, call the `search` tool with relevant keywords.\n- When the user asks what files or sources are available, call `list_sources`. Check the output for any update notices and mention them.\n- When the user asks to refresh or update their knowledge base, call `sync`.\n- To retrieve a full document, call `get_document` with the path or docid from search results.\n\nAlways search before saying you don't have information on a topic — it may be in their documents."
+    }
+  ],
   "user_config": {
     "documents_path": {
       "type": "directory",
