@@ -1,0 +1,56 @@
+{
+  "mcpb_version": "0.1",
+  "name": "knowledge-management",
+  "version": "0.1.0",
+  "description": "Sync your Word docs and Google Docs into a searchable local index Claude can use without loading full files.",
+  "author": { "name": "jharlap" },
+  "server": {
+    "type": "node",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "KM_DOCUMENTS_PATH":        "${user_config.documents_path}",
+        "KM_GOOGLE_DOCS_ENABLED":   "${user_config.google_docs_enabled}",
+        "KM_GOOGLE_DRIVE_FOLDER_ID":"${user_config.google_drive_folder_id}",
+        "KM_SYNC_INTERVAL_MINUTES": "${user_config.sync_interval_minutes}",
+        "KM_GOOGLE_CLIENT_ID":      "${user_config.google_client_id}",
+        "KM_GOOGLE_CLIENT_SECRET":  "${user_config.google_client_secret}"
+      }
+    }
+  },
+  "user_config": {
+    "documents_path": {
+      "type": "directory",
+      "title": "Documents folder",
+      "description": "Local folder to scan for Word documents (.docx). Subfolders are included."
+    },
+    "google_docs_enabled": {
+      "type": "string",
+      "title": "Sync Google Docs? (true / false)",
+      "description": "Set to true to include Google Docs in your knowledge base."
+    },
+    "google_drive_folder_id": {
+      "type": "string",
+      "title": "Google Drive folder ID (optional)",
+      "description": "Restrict Google Docs sync to a specific folder. Leave empty to include all your docs. Find the folder ID in the URL when you open the folder in Google Drive."
+    },
+    "sync_interval_minutes": {
+      "type": "number",
+      "title": "Sync interval (minutes)",
+      "description": "How often to check for updated documents when Claude is running. Default: 60."
+    },
+    "google_client_id": {
+      "type": "string",
+      "title": "Google OAuth Client ID",
+      "description": "From Google Cloud Console → APIs & Services → Credentials. See the setup guide in the README.",
+      "sensitive": true
+    },
+    "google_client_secret": {
+      "type": "string",
+      "title": "Google OAuth Client Secret",
+      "description": "From Google Cloud Console → APIs & Services → Credentials.",
+      "sensitive": true
+    }
+  }
+}

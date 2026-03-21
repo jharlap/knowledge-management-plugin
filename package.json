@@ -1,0 +1,25 @@
+{
+  "name": "knowledge-management-plugin",
+  "version": "0.1.0",
+  "description": "Claude plugin — sync Word docs and Google Docs into a searchable QMD index",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "sync": "node dist/index.js sync"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.27.1",
+    "@tobilu/qmd": "2.0.1",
+    "googleapis": "171.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

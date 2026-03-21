@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "description": "Automerge patch and minor npm updates",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Require review for major npm bumps",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    }
+  ],
+  "customManagers": [
+    {
+      "description": "Track pandoc GitHub releases via versions.json",
+      "customType": "regex",
+      "fileMatch": ["^versions\\.json$"],
+      "matchStrings": [
+        "\"pandoc\":\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "jgm/pandoc",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Type-check
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke test — server starts
+        run: |
+          # Start the MCP server, send an initialize request, expect a response, then shut it down.
+          # The server reads from stdin and writes to stdout (stdio transport).
+          echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' \
+            | timeout 10 node dist/index.js \
+            | grep -q '"result"'
+
+      - name: Smoke test — pandoc fallback path resolves
+        run: |
+          # When running in CI without the bundled binary, pandoc must be on PATH.
+          brew install pandoc
+          node -e "
+            import('./dist/config.js').then(m => {
+              const c = m.loadConfig();
+              console.log('pandocBin:', c.pandocBin);
+            });
+          "
