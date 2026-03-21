@@ -1,5 +1,6 @@
 import type { Config } from '../config.js';
 import { loadState } from '../sync/state.js';
+import { getUpdateMessage } from '../update.js';
 
 export async function handleListSources(config: Config): Promise<string> {
   const state = await loadState(config.stateFile);
@@ -28,6 +29,9 @@ export async function handleListSources(config: Config): Promise<string> {
   }
 
   lines.push('', `**Sync interval:** ${config.syncIntervalMinutes} minutes`);
+
+  const update = getUpdateMessage();
+  if (update) lines.push('', update);
 
   return lines.join('\n');
 }

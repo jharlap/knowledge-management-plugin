@@ -8,6 +8,7 @@ import { handleSync } from './tools/sync.js';
 import { handleSearch } from './tools/search.js';
 import { handleGet } from './tools/get.js';
 import { handleListSources } from './tools/sources.js';
+import { checkForUpdate } from './update.js';
 
 const config = loadConfig();
 
@@ -108,6 +109,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return { content: [{ type: 'text', text: `Error: ${message}` }], isError: true };
   }
 });
+
+// Check for available updates (fire and forget)
+checkForUpdate().catch(() => {});
 
 // Auto-sync on startup if the index is stale
 const state = await loadState(config.stateFile);
