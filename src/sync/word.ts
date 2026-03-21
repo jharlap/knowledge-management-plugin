@@ -24,6 +24,7 @@ export async function syncWordDocs(config: Config, state: SyncState): Promise<Wo
 
   // Walk the documents directory
   const currentPaths = new Set<string>();
+  try {
   for await (const srcPath of walkDir(config.documentsPath, /\.docx$/i)) {
     currentPaths.add(srcPath);
 
@@ -57,6 +58,15 @@ export async function syncWordDocs(config: Config, state: SyncState): Promise<Wo
     }
   }
 
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    const hint = (code === 'EACCES' || code === 'EPERM')
+      ? ' (check macOS Privacy & Security → Files and Folders — Claude needs access to your Documents folder)'
+      : '';
+    result.errors.push(`Cannot read documents folder "${config.documentsPath}": ${err instanceof Error ? err.message : String(err)}${hint}`);
+    return result;
+  }
+
   // Remove mirror files for deleted source docs
   for (const [srcPath, entry] of Object.entries(state.wordFiles)) {
     if (!currentPaths.has(srcPath)) {
@@ -84,7 +94,12 @@ async function* walkDir(dir: string, pattern: RegExp): AsyncGenerator<string> {
   let entries;
   try {
     entries = await fs.readdir(dir, { withFileTypes: true });
-  } catch {
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code !== 'ENOENT') {
+      // EACCES / EPERM = macOS privacy denial; ENOTDIR = not a directory; etc.
+      throw err;
+    }
     return;
   }
   for (const entry of entries) {
