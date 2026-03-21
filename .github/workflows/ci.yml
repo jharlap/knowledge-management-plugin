@@ -18,6 +18,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Generate placeholder credentials for type-checking
+        run: cp src/credentials.example.ts src/credentials.ts
+
       - name: Type-check
         run: npm run lint
 
