@@ -70,10 +70,10 @@ npm install
 npm run build
 
 # Run as MCP server (reads env vars for config)
-KM_DOCUMENTS_PATH=~/Documents node dist/index.js
+KM_DOCUMENTS_PATH=~/Documents node --import ./dist/loader.js dist/index.js
 
 # Run a one-shot sync
-KM_DOCUMENTS_PATH=~/Documents node dist/index.js sync
+KM_DOCUMENTS_PATH=~/Documents node --import ./dist/loader.js dist/index.js sync
 
 # With Google Docs
 KM_GOOGLE_DOCS_ENABLED=true \

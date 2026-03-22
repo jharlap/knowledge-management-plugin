@@ -15,7 +15,7 @@
     "entry_point": "dist/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/dist/index.js"],
+      "args": ["--import", "${__dirname}/dist/loader.js", "${__dirname}/dist/index.js"],
       "env": {
         "KM_DOCUMENTS_PATH":        "${user_config.documents_path}",
         "KM_GOOGLE_DOCS_ENABLED":   "${user_config.google_docs_enabled}",
