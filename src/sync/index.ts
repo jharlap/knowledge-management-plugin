@@ -9,11 +9,13 @@ export interface SyncSummary {
   word: { indexed: number; unchanged: number; removed: number; errors: string[] } | null;
   gdocs: { indexed: number; unchanged: number; errors: string[] } | null;
   qmdUpdated: boolean;
+  embeddingStatus: 'ok' | 'skipped' | 'failed';
+  embeddingError?: string;
   errors: string[];
 }
 
 export async function runSync(config: Config): Promise<SyncSummary> {
-  const summary: SyncSummary = { word: null, gdocs: null, qmdUpdated: false, errors: [] };
+  const summary: SyncSummary = { word: null, gdocs: null, qmdUpdated: false, embeddingStatus: 'skipped', errors: [] };
 
   await fs.mkdir(config.dataDir, { recursive: true });
 
@@ -43,11 +45,12 @@ export async function runSync(config: Config): Promise<SyncSummary> {
       });
 
       await store.update();
-      // embed() downloads ~2GB of models on first run; skip if no embedding model is ready
       try {
         await store.embed();
-      } catch {
-        // Embeddings are optional — BM25 search still works without them
+        summary.embeddingStatus = 'ok';
+      } catch (err) {
+        summary.embeddingStatus = 'failed';
+        summary.embeddingError = err instanceof Error ? err.message : String(err);
       }
 
       await store.close();

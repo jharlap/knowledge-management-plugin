@@ -19,9 +19,14 @@ export async function handleSync(config: Config): Promise<string> {
   }
 
   if (summary.qmdUpdated) {
-    lines.push(`Search index updated.`);
+    const embedNote = summary.embeddingStatus === 'ok'
+      ? ' (keyword + semantic)'
+      : summary.embeddingStatus === 'failed'
+        ? ` (keyword only — embedding failed: ${summary.embeddingError})`
+        : ' (keyword only)';
+    lines.push(`Search index updated${embedNote}.`);
   } else {
-    lines.push(`Search index unchanged (no new or removed documents).`);
+    lines.push(`Search index unchanged.`);
   }
 
   for (const e of summary.errors) lines.push(`⚠ ${e}`);
