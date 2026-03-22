@@ -4,10 +4,16 @@
  * node:sqlite's DatabaseSync API is intentionally compatible with better-sqlite3
  * for the operations qmd uses: new Database(path), db.exec(), db.prepare().get/all/run().
  *
- * sqlite-vec extension loading will fail (node:sqlite requires allowExtensionLoading:true
- * and a different load path), but qmd already handles that gracefully — BM25 search
- * works fine without vector embeddings.
+ * Extension loading (sqlite-vec) requires allowExtensionLoading:true, which
+ * better-sqlite3 enables by default but node:sqlite does not. We wrap the
+ * constructor to always enable it so sqlite-vec loads normally.
  */
 import { DatabaseSync } from 'node:sqlite';
 
-export default DatabaseSync;
+class Database extends DatabaseSync {
+  constructor(path: string, options?: ConstructorParameters<typeof DatabaseSync>[1]) {
+    super(path, { ...options, allowExtension: true });
+  }
+}
+
+export default Database;
