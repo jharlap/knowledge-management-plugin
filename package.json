@@ -11,7 +11,7 @@
     "sync": "node dist/index.js sync"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.27.1",
+    "@modelcontextprotocol/sdk": "1.29.0",
     "@tobilu/qmd": "2.0.1",
     "googleapis": "171.4.0"
   },
