@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
-    "@tobilu/qmd": "2.0.1",
+    "@tobilu/qmd": "2.1.0",
     "googleapis": "171.4.0"
   },
   "devDependencies": {
