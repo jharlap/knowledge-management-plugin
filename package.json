@@ -13,7 +13,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",
     "@tobilu/qmd": "2.5.3",
-    "googleapis": "171.4.0"
+    "googleapis": "178.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
